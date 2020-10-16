@@ -3,10 +3,10 @@
  * @Author: qingyang
  * @Date: 2020-08-22 16:08:57
  * @LastEditors: qingyang
- * @LastEditTime: 2020-09-02 13:44:33
+ * @LastEditTime: 2020-10-16 10:50:34
  */
-import Observer from './observer'
-import Watcher from './observer/watcher'
+import Observer from './core/observer'
+import Watcher from './core/observer/watcher'
 import Compile from './compile'
 
 export default class MVue {

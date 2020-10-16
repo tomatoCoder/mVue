@@ -3,9 +3,9 @@
  * @Author: qingyang
  * @Date: 2020-08-27 15:18:16
  * @LastEditors: qingyang
- * @LastEditTime: 2020-09-07 13:20:55
+ * @LastEditTime: 2020-10-16 15:52:06
  */
-import Watcher from '../observer/watcher'
+import Watcher from '../core/observer/watcher'
 export default class Compile {
     constructor (el,vm) {
         this.vm = vm;
@@ -15,7 +15,6 @@ export default class Compile {
     }
     init() {
         if(this.el) {
-            debugger
             this.fragment = this.nodeToFragment(this.el);
             this.compileElement(this.fragment);
             this.el.appendChild(this.fragment);

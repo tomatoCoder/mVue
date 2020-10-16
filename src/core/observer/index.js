@@ -4,7 +4,7 @@
  * @Author: qingyang
  * @Date: 2020-08-22 10:30:22
  * @LastEditors: qingyang
- * @LastEditTime: 2020-09-02 16:47:12
+ * @LastEditTime: 2020-10-16 15:52:14
  */
 import Dep from './dep'
 import {def,hasProto,hasOwn,isObject} from '../utils/index'
@@ -14,8 +14,9 @@ export default class Observer {
         this.value = value;
         this.dep = new Dep();
         this.vmCount = 0;
-        def(value, '__ob__', this); //给对象添加__ob__的属性
-        console.log('11111111111111111111111111111');
+        // 给value新增一个__ob__属性，值为该value的Observer实例
+        // 相当于为value打上标记，表示它已经被转化成响应式了，避免重复操作
+        def(value, '__ob__', this); 
         if(Array.isArray(value)) {
           if (hasProto) {
             protoAugment(value, arrayMethods)
@@ -71,9 +72,12 @@ function defineRective(obj, key, val) {
         enumerable: true,
         configurable: true,
         get() {
+          if(Dep.target) {
+            dep.depend()
             if (childOb) {
-              childOb.dep.depend() //收集依赖
+              childOb.dep.depend()
             }
+          }
             return val;
         },
         set(newVal) {

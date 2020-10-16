@@ -3,7 +3,7 @@
  * @Author: qingyang
  * @Date: 2020-08-22 14:26:20
  * @LastEditors: qingyang
- * @LastEditTime: 2020-09-02 15:54:54
+ * @LastEditTime: 2020-10-16 14:20:18
  */
 import Dep, { pushTarget, popTarget } from './dep'
 export default class Watcher {
