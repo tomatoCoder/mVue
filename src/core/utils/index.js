@@ -3,7 +3,7 @@
  * @Author: qingyang
  * @Date: 2020-09-02 13:29:16
  * @LastEditors: qingyang
- * @LastEditTime: 2020-09-02 14:45:40
+ * @LastEditTime: 2020-10-26 16:16:09
  */
 /* @flow */
 
@@ -21,6 +21,9 @@ export function isReserved () {
   const c = (str + '').charCodeAt(0)
   return c === 0x24 || c === 0x5F
 }
+export const emptyObject = Object.freeze({})
+
+export function noop (a, b, c) {}
 
 export const hasProto = '__proto__' in {}
 /**
@@ -46,6 +49,39 @@ export function def (obj, key, val, enumerable) {
     configurable: true
   })
 }
+
+/**
+ * Simple bind polyfill for environments that do not support it,
+ * e.g., PhantomJS 1.x. Technically, we don't need this anymore
+ * since native bind is now performant enough in most browsers.
+ * But removing it would mean breaking code that was able to run in
+ * PhantomJS 1.x, so this must be kept for backward compatibility.
+ */
+
+/* istanbul ignore next */
+function polyfillBind (fn, ctx) {
+  function boundFn (a) {
+    const l = arguments.length
+    return l
+      ? l > 1
+        ? fn.apply(ctx, arguments)
+        : fn.call(ctx, a)
+      : fn.call(ctx)
+  }
+
+  boundFn._length = fn.length
+  return boundFn
+}
+
+function nativeBind (fn, ctx) {
+  return fn.bind(ctx)
+}
+
+export const bind = Function.prototype.bind
+  ? nativeBind
+  : polyfillBind
+
+
 
 /**
  * Parse simple path.

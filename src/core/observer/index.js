@@ -4,7 +4,7 @@
  * @Author: qingyang
  * @Date: 2020-08-22 10:30:22
  * @LastEditors: qingyang
- * @LastEditTime: 2020-10-16 15:52:14
+ * @LastEditTime: 2020-10-26 16:37:19
  */
 import Dep from './dep'
 import {def,hasProto,hasOwn,isObject} from '../utils/index'
@@ -41,7 +41,7 @@ export default class Observer {
     }
 }
 
-export function observe (value, asRootData) {
+export const observe = (value, asRootData) =>{
     // if (!isObject(value) || value instanceof VNode) {
     //   return
     // }

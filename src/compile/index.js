@@ -3,7 +3,7 @@
  * @Author: qingyang
  * @Date: 2020-08-27 15:18:16
  * @LastEditors: qingyang
- * @LastEditTime: 2020-10-16 15:52:06
+ * @LastEditTime: 2020-10-26 17:08:49
  */
 import Watcher from '../core/observer/watcher'
 export default class Compile {

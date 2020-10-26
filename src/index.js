@@ -3,15 +3,19 @@
  * @Author: qingyang
  * @Date: 2020-08-22 14:03:31
  * @LastEditors: qingyang
- * @LastEditTime: 2020-10-16 15:46:51
+ * @LastEditTime: 2020-10-26 17:13:00
  */
-import  MVue from './mVue'
-let vue = new MVue({ 
+import Vue from './core/instance'
+
+let vue = new Vue({ 
     el: '#app',
     data : {
         list: [1,2,3,4],
         name: 'hello world'
-    },  
+    }, 
+    beforeCreate() {
+        console.log('创建组件前')
+    }
 })
 let inputEl = document.getElementById('input');
 inputEl.oninput = (e) => {
