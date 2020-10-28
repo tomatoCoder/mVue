@@ -3,8 +3,10 @@
  * @Author: qingyang
  * @Date: 2020-10-27 14:49:26
  * @LastEditors: qingyang
- * @LastEditTime: 2020-10-27 14:52:52
+ * @LastEditTime: 2020-10-28 18:01:19
  */
+
+ import {parseHTML} from './html-parser'
 export const onRE = /^@|^v-on:/
 export const dirRE = process.env.VBIND_PROP_SHORTHAND
   ? /^v-|^@|^:|^\.|^#/
@@ -44,4 +46,54 @@ export const createASTElement = (tag, attrs, parent) => {
         parent,
         children: []
     }
+}
+
+
+
+export const parse = (template, options) => {
+  const stack = []
+  const preserveWhitespace = options.preserveWhitespace !== false
+  const whitespaceOption = options.whitespace
+  let root
+  let currentParent
+  let inVPre = false
+  let inPre = false
+  let warned = false
+  // 解析html
+  parseHTML(template, {
+    warn: options.warn,
+    expectHTML: options.expectHTML,
+    isUnaryTag: options.isUnaryTag,
+    canBeLeftOpenTag: options.canBeLeftOpenTag,
+    shouldDecodeNewlines: options.shouldDecodeNewlines,
+    shouldDecodeNewlinesForHref: options.shouldDecodeNewlinesForHref,
+    shouldKeepComment: options.comments,
+    outputSourceRange: options.outputSourceRange,
+    start(tag, attrs, unary) {
+      //每当解析到标签开始的位置时，触发
+      console.log('解析开始'+tag);
+      let element = createASTElement(tag, attrs, currentParent)
+      debugger
+    },
+    end() {
+      //每当解析到标签结束的位置时，触发
+      console.log('解析结束')
+    },
+    chars(text, start, end) {
+      //每当解析到文本时触发
+      console.log('解析到文本',text)
+    },
+    comment(text, start, end) {
+      //每当解析到注释时触发
+      console.log('解析到注释' + text)
+    }
+  })
+}
+
+const makeAttrsMap = (attrs) => {
+  const map = {}
+  for (let i = 0, l = attrs.length; i < l; i++) {
+    map[attrs[i].name] = attrs[i].value
+  }
+  return map
 }

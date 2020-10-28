@@ -3,9 +3,10 @@
  * @Author: qingyang
  * @Date: 2020-08-27 15:18:16
  * @LastEditors: qingyang
- * @LastEditTime: 2020-10-26 17:08:49
+ * @LastEditTime: 2020-10-28 18:01:31
  */
 import Watcher from '../core/observer/watcher'
+import { parse } from './parser/index' 
 export default class Compile {
     constructor (el,vm) {
         this.vm = vm;
@@ -93,4 +94,18 @@ export default class Compile {
     isDirective(attr) {
         return attr.indexOf('v-') == 0;
     }
+}
+
+
+export const createCompiler = (template, options) => {
+    // 1.解析模板：用正则表达式解析template 模板中的指令，class, style等数据，形成AST
+    const ast = parse(template.trim(), options)
+    debugger
+    // optimize(ast, options) //2.optimize
+    // const code = generate(ast, options) //3.generate
+    // return {
+    //   ast,
+    //   render: code.render,
+    //   staticRenderFns: code.staticRenderFns
+    // }
 }

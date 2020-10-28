@@ -3,8 +3,20 @@
  * @Author: qingyang
  * @Date: 2020-10-26 13:20:26
  * @LastEditors: qingyang
- * @LastEditTime: 2020-10-26 17:01:29
+ * @LastEditTime: 2020-10-28 09:46:27
  */
+
+export let activeInstance = null;
+export let isUpdatingChildComponent = false;
+
+export function setActiveInstance(vm) {
+    const preActiveInstance = activeInstance;
+    activeInstance = vm;
+    return () => {
+        activeInstance = preActiveInstance
+    }
+}
+
 export const initLifecycle = (vm) => {
     const options = vm.$options;
     // let parent = options.parent;
