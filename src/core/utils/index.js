@@ -3,7 +3,7 @@
  * @Author: qingyang
  * @Date: 2020-09-02 13:29:16
  * @LastEditors: qingyang
- * @LastEditTime: 2020-10-26 16:16:09
+ * @LastEditTime: 2020-10-27 15:24:19
  */
 /* @flow */
 
@@ -22,6 +22,26 @@ export function isReserved () {
   return c === 0x24 || c === 0x5F
 }
 export const emptyObject = Object.freeze({})
+
+
+// These helpers produce better VM code in JS engines due to their
+// explicitness and function inlining.
+export function isUndef (v) {
+  return v === undefined || v === null
+}
+
+export function isDef (v) {
+  return v !== undefined && v !== null
+}
+
+export function isTrue (v) {
+  return v === true
+}
+
+export function isFalse (v) {
+  return v === false
+}
+
 
 export function noop (a, b, c) {}
 
