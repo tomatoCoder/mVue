@@ -3,7 +3,7 @@
  * @Author: qingyang
  * @Date: 2020-10-28 13:41:50
  * @LastEditors: qingyang
- * @LastEditTime: 2020-10-28 18:04:56
+ * @LastEditTime: 2020-10-30 13:15:05
  */
 
 import { makeMap, no} from '../../shared/util'
@@ -30,6 +30,19 @@ const startTagOpen = new RegExp(`^<${qnameCapture}`)
 const startTagClose = /^\s*(\/?)>/
 const endTag = new RegExp(`^<\\/${qnameCapture}[^>]*>`)
 
+
+const decodingMap = {
+  '&lt;': '<',
+  '&gt;': '>',
+  '&quot;': '"',
+  '&amp;': '&',
+  '&#10;': '\n',
+  '&#9;': '\t',
+  '&#39;': "'"
+}
+const encodedAttr = /&(?:lt|gt|quot|amp|#39);/g
+const encodedAttrWithNewLines = /&(?:lt|gt|quot|amp|#39|#10|#9);/g
+
 const isIgnoreNewlineTag = makeMap('pre,textarea', true)
 const shouldIgnoreFirstNewline = (tag, html) => tag && isIgnoreNewlineTag(tag) && html[0] === '\n'
 
@@ -42,9 +55,10 @@ export const parseHTML = (html, options) => {
   const stack = []     // 维护AST节点层级的栈
   const expectHTML = options.expectHTML
   const isUnaryTag = options.isUnaryTag || no;
-  const canBeLeftOpenTag = options.canBeLeftOpenTag || no
-  let index = 0
-  let last, lastTag;
+  const canBeLeftOpenTag = options.canBeLeftOpenTag || no  // 用来检测便签是否是可以省略闭合标签的非自闭和标签
+  let index = 0    // 解析游标，标识当前从何处开始解析模板字符串
+  let last,  // cunch剩余还未解析的模板字符串
+      lastTag;  // 存储位于stack栈顶的元素
 
 
   // 开启一个while 循环
@@ -105,6 +119,8 @@ export const parseHTML = (html, options) => {
               continue
             }
          }
+
+         // 如果html字符串不是以'<'开头，则解析文本类型
          let text, rest, next
          if (textEnd >= 0) {
             rest = html.slice(textEnd)
@@ -114,13 +130,21 @@ export const parseHTML = (html, options) => {
               !comment.test(rest) &&
               !conditionalComment.test(rest)
             ) {
-              // < in plain text, be forgiving and treat it as text
+              // 在'<'之后查找是否还有'<'
               next = rest.indexOf('<', 1)
+               // 如果没有了，表示'<'后面也是文本
               if (next < 0) break
+              // 如果还有，表示'<'是文本中的一个字符
               textEnd += next
+              // 那就把next之后的内容截出来继续下一轮循环匹配
               rest = html.slice(textEnd)
             }
             text = html.substring(0, textEnd)
+         }
+         // 如果没找到'<',表示这一段html字符串都是纯文本
+         if (textEnd < 0) {
+            text = html;
+            html = ''
          }
          if (text) {
            advance(text.length)
@@ -131,8 +155,12 @@ export const parseHTML = (html, options) => {
       } else {
         // 解析的内容在纯文本标签里 (script,style,textarea)
       }
+      // 将整个字符串作为文本对待
       if (html === last) {
-        options.chars && options.chars(html)
+        options.chars && options.chars(html);
+        if (!stack.length && options.warn) {
+          options.warn(`Mal-formatted tag at end of template: "${html}"`, { start: index + html.length })
+        }
         break
       }
   }
@@ -167,9 +195,9 @@ export const parseHTML = (html, options) => {
   }
 
   function handleStartTag (match) {
-    const tagName = match.tagName
-    const unarySlash = match.unarySlash
-    if (expectHTML) {
+    const tagName = match.tagName   // 开始标签的标签名
+    const unarySlash = match.unarySlash  //  是否为自闭合标签的标志，自闭合为"",非自闭合为"/"
+    if (expectHTML) {           
       if (lastTag === 'p' && isNonPhrasingTag(tagName)) {
         parseEndTag(lastTag)
       }
@@ -178,7 +206,7 @@ export const parseHTML = (html, options) => {
       }
     }
 
-    const unary = isUnaryTag(tagName) || !!unarySlash
+    const unary = isUnaryTag(tagName) || !!unarySlash    // 布尔值，标志是否为自闭和标签
 
     const l = match.attrs.length
     const attrs = new Array(l)
@@ -246,9 +274,12 @@ export const parseHTML = (html, options) => {
       // Remove the open elements from the stack
       stack.length = pos
       lastTag = pos && stack[pos - 1].tag
-    } else if (lowerCasedTagName === 'br') {
+    } 
+    // 如果pos为-1 ，再判断是否为br 或者 p 标签 ，
+    // 浏览器会自动把</br>标签解析为正常的 <br>标签，而对于</p>浏览器则自动将其补全为<p></p>
+    else if (lowerCasedTagName === 'br') {
       if (options.start) {
-        options.start(tagName, [], true, start, end)
+        options.start(tagName, [], true, start, end) // 创建<br>AST节点
       }
     } else if (lowerCasedTagName === 'p') {
       if (options.start) {

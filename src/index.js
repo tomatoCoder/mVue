@@ -3,12 +3,13 @@
  * @Author: qingyang
  * @Date: 2020-08-22 14:03:31
  * @LastEditors: qingyang
- * @LastEditTime: 2020-10-26 17:13:00
+ * @LastEditTime: 2020-10-30 16:40:58
  */
 import Vue from './core/instance'
 
 let vue = new Vue({ 
     el: '#app',
+    template: ` <div id="NLRX"><p>Hello {{name}}</p></div>  `,
     data : {
         list: [1,2,3,4],
         name: 'hello world'
