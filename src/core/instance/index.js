@@ -3,10 +3,13 @@
  * @Author: qingyang
  * @Date: 2020-10-23 17:16:59
  * @LastEditors: qingyang
- * @LastEditTime: 2020-10-30 17:00:16
+ * @LastEditTime: 2020-11-02 15:01:53
  */
 import {init} from './init'
-import { createCompiler } from '../../compile/create-compiler'
+import { createCompiler } from '../../compile/index'
+const baseOptions = {
+  expectHTML: true
+};
 const { compile, compileToFunctions } = createCompiler(baseOptions)
 export default class Vue {
     constructor(options) {

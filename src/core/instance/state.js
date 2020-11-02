@@ -3,10 +3,12 @@
  * @Author: qingyang
  * @Date: 2020-10-23 17:27:13
  * @LastEditors: qingyang
- * @LastEditTime: 2020-10-26 16:39:10
+ * @LastEditTime: 2020-11-02 14:52:54
  */
 import  { observe } from '../observer/index'
 import {noop, bind} from '../utils/index'
+import Dep, { pushTarget, popTarget } from '../observer/dep'
+
 export const initState = (vm) => {
     vm._wathcers = [];
     const opts = vm.$options;
@@ -66,4 +68,17 @@ const initData = (vm) => {
     let data = vm.$options.data;
     data  = vm._data = typeof data === 'function' ? getData(data, vm) : data || {}
     observe(data, true)  
+}
+
+export function getData (data, vm) {
+  // #7573 disable dep collection when invoking data getters
+  pushTarget()
+  try {
+    return data.call(vm, vm)
+  } catch (e) {
+    handleError(e, vm, `data()`)
+    return {}
+  } finally {
+    popTarget()
+  }
 }

@@ -3,7 +3,7 @@
  * @Author: qingyang
  * @Date: 2020-10-27 14:49:26
  * @LastEditors: qingyang
- * @LastEditTime: 2020-10-30 09:55:56
+ * @LastEditTime: 2020-11-02 15:12:50
  */
 
  import {parseHTML} from './html-parser'
@@ -245,8 +245,39 @@ export function processElement (
   // for (let i = 0; i < transforms.length; i++) {
   //   element = transforms[i](element, options) || element
   // }
-  // processAttrs(element)
+  processAttrs(element);  //解析标签中的属性
   return element
+}
+
+
+function processAttrs (el) {
+  const list = el.attrsList
+  let i, l, name, value, modifiers
+  for (i = 0, l = list.length; i < l; i++) {
+    name  = list[i].name
+    value = list[i].value
+    if (dirRE.test(name)) {
+      // 解析修饰符
+      modifiers = parseModifiers(name)
+      if (modifiers) {
+        name = name.replace(modifierRE, '')
+      }
+      if (onRE.test(name)) { // v-on
+        name = name.replace(onRE, '')
+        debugger
+        addHandler(el, name, value, modifiers, false, warn)
+      }
+    }
+  }
+}
+
+function parseModifiers (name) {
+  const match = name.match(modifierRE)
+  if (match) {
+    const ret = {}
+    match.forEach(m => { ret[m.slice(1)] = true })
+    return ret
+  }
 }
 
 function processKey (el) {

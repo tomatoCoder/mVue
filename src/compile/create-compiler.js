@@ -20,7 +20,6 @@ export function createCompilerCreator (baseCompile) {
       const tips = []
 
       const compiled = baseCompile(template.trim(), finalOptions)
-      debugger
       compiled.errors = errors
       compiled.tips = tips
       return compiled

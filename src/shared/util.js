@@ -3,7 +3,7 @@
  * @Author: qingyang
  * @Date: 2020-10-28 13:42:29
  * @LastEditors: qingyang
- * @LastEditTime: 2020-10-30 15:08:18
+ * @LastEditTime: 2020-11-02 15:26:41
  */
 /* @flow */
 
@@ -46,3 +46,5 @@ export const extend = (to, _from) => {
   }
   return to
 }
+
+export function noop (a, b, c) {}
